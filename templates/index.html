@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWD Pothole AI Inspector & IRC Reference</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px;">
+
+    <div style="max-width: 900px; margin: 20px auto; background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <h2 style="color: #1a252f; margin-top: 0;">🛣️ Road Work Inspection & IRC Clause Search</h2>
+        <p style="color: #666;">Type any deficiency or road work term to get instant IRC/MoRTH reference clauses and tolerance limits.</p>
+        
+        <input 
+            type="text" 
+            id="ircQuery" 
+            placeholder="Search topic (e.g., PQC, Dowel, Bitumen, DLC, WMM, Compaction, Pothole)..." 
+            style="width: 100%; padding: 12px; font-size: 16px; border: 2px solid #3498db; border-radius: 6px; box-sizing: border-box;" 
+            onkeyup="searchIRC()"
+        />
+        
+        <div id="searchResults" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+    function searchIRC() {
+        let query = document.getElementById('ircQuery').value;
+        if (query.length < 2) {
+            document.getElementById('searchResults').innerHTML = '';
+            return;
+        }
+
+        fetch(/search_irc?q=${encodeURIComponent(query)})
+            .then(response => response.json())
+            .then(data => {
+                let html = '';
+                if (data.results.length === 0) {
+                    html = '<p style="color: #e74c3c; font-weight: bold;">No matching IRC/MoRTH clause found.</p>';
+                } else {
+                    data.results.forEach(item => {
+                        let badgeColor = item.category.includes('Rigid') ? '#8e44ad' : '#27ae60';
+                        html += `
+                            <div style="border: 1px solid #e0e0e0; border-left: 5px solid ${badgeColor}; padding: 15px; border-radius: 6px; margin-bottom: 15px; background: #ffffff; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <h3 style="margin: 0; color: #2c3e50;">${item.topic}</h3>
+                                    <span style="background: ${badgeColor}; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">${item.category}</span>
+                                </div>
+                                <p style="margin: 4px 0; color: #34495e;"><strong>Reference:</strong> ${item.code} | <strong>Clause:</strong> ${item.clause}</p>
+                                <p style="margin: 8px 0; line-height: 1.5; color: #555;"><strong>Details:</strong> ${item.detail}</p>
+                                <p style="margin: 4px 0; color: #c0392b; font-weight: bold;"><strong>Tolerance / Limit:</strong> ${item.tolerance}</p>
+                            </div>
+                        `;
+                    });
+                }
+                document.getElementById('searchResults').innerHTML = html;
+            });
+    }
+    </script>
+</body>
+</html>
