@@ -1,7 +1,7 @@
 import cv2
 from flask import Flask, jsonify, render_template, request
 
-app = Flask(_name_)
+app = Flask(__name__)
 
 # ==========================================
 # 1. PURANA POTHOLE DETECTION & MEASUREMENT CODE
