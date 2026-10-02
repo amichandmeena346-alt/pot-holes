@@ -1,7 +1,7 @@
 import cv2
 from flask import Flask, render_template, request, jsonify
 
-app = Flask(_name_)
+app = Flask(__name__)
 
 @app.route('/')
 def index():
